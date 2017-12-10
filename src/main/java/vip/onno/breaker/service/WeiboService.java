@@ -39,10 +39,9 @@ public class WeiboService {
 
     public List<Commit> findCommit(Long weiboId, Object target) {
         List<Commit> matchCommits = new ArrayList<>();
-        for (int page1 = 1, page2 = 2;; page1 += 2, page2 += 2) {
-            LOGGER.info("fetching weibo: {}, {}", page1, page2);
-            if (!(this.findByUserIdOrName(weiboId, target, page1, matchCommits)
-                || this.findByUserIdOrName(weiboId, target, page2, matchCommits)))
+        for (int page = 0;; page++) {
+            LOGGER.info("fetching weibo: {}", page);
+            if (!this.findByUserIdOrName(weiboId, target, page, matchCommits))
                 return matchCommits;
         }
     }
