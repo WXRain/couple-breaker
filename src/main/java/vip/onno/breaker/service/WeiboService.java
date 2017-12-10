@@ -36,7 +36,16 @@ public class WeiboService {
     private static final String WEIBO_COMMIT_URL = "https://m.weibo.cn/api/comments/show?id=%d&page=%d";
     private static final Logger LOGGER = LoggerFactory.getLogger(WeiboService.class);
 
-    public CommitPage fetchCommitPage(String url) {
+    public List<Commit> findCommit(Long weiboId, Object target) {
+        List<Commit> matchCommits = new ArrayList<>();
+        for (int page = 0;; page++) {
+            LOGGER.info("fetching weibo: {}", page);
+            if (!this.findByUserIdOrName(weiboId, target, page, matchCommits))
+                return matchCommits;
+        }
+    }
+
+    private CommitPage fetchCommitPage(String url) {
         CommitPage commitPage = null;
         HttpUriRequest request = new HttpGet(url);
         request.setHeader("user_agent", USER_AGENT);
@@ -59,15 +68,6 @@ public class WeiboService {
         }
         LOGGER.debug("commit page: {}", commitPage);
         return commitPage;
-    }
-
-    public List<Commit> findCommit(Long weiboId, Object target) {
-        List<Commit> matchCommits = new ArrayList<>();
-        for (int page = 0;; page++) {
-            LOGGER.info("fetching weibo: {}", page);
-            if (!this.findByUserIdOrName(weiboId, target, page, matchCommits))
-                return matchCommits;
-        }
     }
 
     /**
