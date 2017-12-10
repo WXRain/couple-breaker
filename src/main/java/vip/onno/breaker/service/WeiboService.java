@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 
-import vip.onno.breaker.controller.ApiCommitController;
 import vip.onno.breaker.pojo.Commit;
 import vip.onno.breaker.pojo.CommitPage;
 
@@ -35,19 +34,9 @@ public class WeiboService {
     private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
         + "(KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
     private static final String WEIBO_COMMIT_URL = "https://m.weibo.cn/api/comments/show?id=%d&page=%d";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApiCommitController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WeiboService.class);
 
-    public List<Commit> findCommit(Long weiboId, Object target) {
-        List<Commit> matchCommits = new ArrayList<>();
-        for (int page1 = 1, page2 = 2;; page1 += 2, page2 += 2) {
-            LOGGER.info("fetching weibo: {}, {}", page1, page2);
-            if (!(this.findByUserIdOrName(weiboId, target, page1, matchCommits)
-                || this.findByUserIdOrName(weiboId, target, page2, matchCommits)))
-                return matchCommits;
-        }
-    }
-
-    private CommitPage fetchCommitPage(String url) {
+    public CommitPage fetchCommitPage(String url) {
         CommitPage commitPage = null;
         HttpUriRequest request = new HttpGet(url);
         request.setHeader("user_agent", USER_AGENT);
@@ -70,6 +59,15 @@ public class WeiboService {
         }
         LOGGER.debug("commit page: {}", commitPage);
         return commitPage;
+    }
+
+    public List<Commit> findCommit(Long weiboId, Object target) {
+        List<Commit> matchCommits = new ArrayList<>();
+        for (int page = 0;; page++) {
+            LOGGER.info("fetching weibo: {}", page);
+            if (!this.findByUserIdOrName(weiboId, target, page, matchCommits))
+                return matchCommits;
+        }
     }
 
     /**
