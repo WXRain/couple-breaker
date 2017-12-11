@@ -44,31 +44,4 @@ public class ApiCommitController {
         return new ListResponse(result, ResponseStatus.OPERATION_SUCCEED);
     }
 
-    @RequestMapping(value = "/commit/find/id_url", method = RequestMethod.POST)
-    public BaseResponse findCommitByUserIdUrl(String url, Long userId) {
-        Long weiboId = this.parseWeiboId(url);
-        LOGGER.info("find commit by {}-{}", weiboId, userId);
-        List<Commit> result = WeiboService.findCommit(weiboId, userId);
-        LOGGER.debug("find result: {}", result);
-        return new ListResponse(result, ResponseStatus.OPERATION_SUCCEED);
-    }
-
-    @RequestMapping(value = "/commit/find/name_url", method = RequestMethod.POST)
-    public BaseResponse findCommitByUserNameUrl(String url, String userName) {
-        Long weiboId = this.parseWeiboId(url);
-        LOGGER.info("find commit by {}-{}", weiboId, userName);
-        List<Commit> result = WeiboService.findCommit(weiboId, userName);
-        LOGGER.debug("find result: {}", result);
-        return new ListResponse(result, ResponseStatus.OPERATION_SUCCEED);
-    }
-
-    private Long parseWeiboId(String str) {
-        Long num = null;
-        Matcher matcher = Pattern.compile("\\d+").matcher(str);
-        if (matcher.find()) {
-            num = Long.valueOf(matcher.group(0));
-        }
-        return num;
-    }
-
 }
