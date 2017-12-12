@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN">
+    <appenders>
+        <console name="console" target="SYSTEM_OUT">
+            <patternlayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </console>
+    </appenders>
+    <loggers>
+        <root level="DEBUG">
+            <appenderref ref="console" />
+        </root>
+        <!-- Application Loggers -->
+        <logger name="vip.onno.breaker">
+            <level value="debug" />
+        </logger>
+
+        <!-- 3rdparty Loggers -->
+        <logger name="org.springframework.core">
+            <level value="info" />
+        </logger>
+
+        <logger name="org.springframework.beans">
+            <level value="info" />
+        </logger>
+
+        <logger name="org.springframework.context">
+            <level value="info" />
+        </logger>
+
+        <logger name="org.springframework.web">
+            <level value="info" />
+        </logger>
+    </loggers>
+</configuration>

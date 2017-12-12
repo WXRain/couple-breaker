@@ -1,2 +1,2 @@
 # couple-breaker
-A finder of target user's commits of a specied weibo.
+A finder of target user's comments of a specied weibo.

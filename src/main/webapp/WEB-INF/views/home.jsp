@@ -103,7 +103,7 @@
       <div style="text-align:center">
         <p><span>您是第<span style="color: red">&nbsp;${visitCount}&nbsp;</span>个访问者</span></p>
         <p><span>&copy; Couple Breaker 2017 权利所有</span></p>
-        <p><span>如有问题，请联系 jingqingyun@163.com，虽然我极有可能看不到。</span></p>
+        <p><span>如有问题，请联系 jingqingyun@163.com，虽然我并不看。</span></p>
       </div>
     </footer>
   </div>

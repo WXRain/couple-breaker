@@ -14,17 +14,17 @@ $(function() {
         }
 
         if (weiboType == "url") {
-            weibo = /\d{16}/.exec(url);
+            weibo = /\d{16}/.exec(weibo);
             if (weibo == null) {
-                alert("不是有效的 URL")；
-                return；
+                alert("不是有效的 URL");
+                return;
             }
         }
 
         $("#enterBtn").html("请稍等");
         if (userType == "name") {
             $.ajax({
-                url: "weibo/commit/name/" + weibo +"/" + target,
+                url: "weibo/comment/name/" + weibo +"/" + target,
                 type: "get",
                 dataType: "json",
                 success: function(data) {
@@ -36,7 +36,7 @@ $(function() {
             });
         } else if (userType == "id") {
             $.ajax({
-                url: "weibo/commit/id/" + weibo +"/" + target,
+                url: "weibo/comment/id/" + weibo +"/" + target,
                 type: "get",
                 dataType: "json",
                 success: function(data) {
@@ -49,12 +49,13 @@ $(function() {
         } else {
             alert("参数错误");
         }
+        
+        $("#enterBtn").html("确 定");
     });
 });
 
 function requestSuccess(data) {
     console.info(data.data.length);
-    $("#enterBtn").html("确 定");
     if (data.data.length == 0) {
         alert("没有找到");
         return;

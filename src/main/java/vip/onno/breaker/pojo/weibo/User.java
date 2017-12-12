@@ -1,8 +1,8 @@
-package vip.onno.breaker.pojo;
+package vip.onno.breaker.pojo.weibo;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class WeiboUser {
+public class User {
     private Long id;
     @JSONField(name = "screen_name")
     private String screenName;
@@ -102,7 +102,7 @@ public class WeiboUser {
 
     @Override
     public String toString() {
-        return "WeiboUser [followMe=" + followMe + ", following=" + following + ", id=" + id + ", mbType=" + mbType
+        return "User [followMe=" + followMe + ", following=" + following + ", id=" + id + ", mbType=" + mbType
             + ", profileImageUrl=" + profileImageUrl + ", profileUrl=" + profileUrl + ", remark=" + remark
             + ", screenName=" + screenName + ", verified=" + verified + ", verifiedType=" + verifiedType + "]";
     }

@@ -1,13 +1,13 @@
-package vip.onno.breaker.pojo;
+package vip.onno.breaker.pojo.weibo;
 
 import java.util.List;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class Commit {
+public class Comment {
     private Long id;
     private String source;
-    private WeiboUser user;
+    private User user;
     private String text;
     private Integer likeCounts;
 
@@ -22,7 +22,7 @@ public class Commit {
     @JSONField(name = "like_counts")
     private Boolean liked;
     @JSONField(name = "pic")
-    private List<Picture> pic;
+    private List<CommentPicture> pic;
 
     public String getCreatedAt() {
         return createdAt;
@@ -40,7 +40,7 @@ public class Commit {
         return liked;
     }
 
-    public List<Picture> getPic() {
+    public List<CommentPicture> getPic() {
         return pic;
     }
 
@@ -60,7 +60,7 @@ public class Commit {
         return text;
     }
 
-    public WeiboUser getUser() {
+    public User getUser() {
         return user;
     }
 
@@ -80,7 +80,7 @@ public class Commit {
         this.liked = liked;
     }
 
-    public void setPic(List<Picture> pic) {
+    public void setPic(List<CommentPicture> pic) {
         this.pic = pic;
     }
 
@@ -100,13 +100,13 @@ public class Commit {
         this.text = text;
     }
 
-    public void setUser(WeiboUser user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
     @Override
     public String toString() {
-        return "Commit [id=" + id + ", source=" + source + ", user=" + user + ", text=" + text + ", likeCounts="
+        return "Comment [id=" + id + ", source=" + source + ", user=" + user + ", text=" + text + ", likeCounts="
             + likeCounts + ", createdAt=" + createdAt + ", replyId=" + replyId + ", replyText=" + replyText + ", liked="
             + liked + ", pic=" + pic + "]";
     }

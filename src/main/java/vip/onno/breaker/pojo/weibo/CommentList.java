@@ -1,26 +1,26 @@
-package vip.onno.breaker.pojo;
+package vip.onno.breaker.pojo.weibo;
 
 import java.util.List;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class CommitPage {
-    private Integer ok;
-    private String msg;
-    private List<Commit> data;
+import vip.onno.breaker.pojo.weibo.Comment;
+
+public class CommentList {
+    private List<Comment> data;
     @JSONField(name = "total_number")
     private Integer totalNumber;
     private Integer max;
     @JSONField(name = "hot_data")
-    private List<Commit> hotData;
+    private List<Comment> hotData;
     @JSONField(name = "hot_total_number")
     private Integer hotTotalNumber;
 
-    public List<Commit> getData() {
+    public List<Comment> getData() {
         return data;
     }
 
-    public List<Commit> getHotData() {
+    public List<Comment> getHotData() {
         return hotData;
     }
 
@@ -32,23 +32,15 @@ public class CommitPage {
         return max;
     }
 
-    public String getMsg() {
-        return msg;
-    }
-
-    public Integer getOk() {
-        return ok;
-    }
-
     public Integer getTotalNumber() {
         return totalNumber;
     }
 
-    public void setData(List<Commit> data) {
+    public void setData(List<Comment> data) {
         this.data = data;
     }
 
-    public void setHotData(List<Commit> hotData) {
+    public void setHotData(List<Comment> hotData) {
         this.hotData = hotData;
     }
 
@@ -60,22 +52,14 @@ public class CommitPage {
         this.max = max;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public void setOk(Integer ok) {
-        this.ok = ok;
-    }
-
     public void setTotalNumber(Integer totalNumber) {
         this.totalNumber = totalNumber;
     }
 
     @Override
     public String toString() {
-        return "CommitPage [ok=" + ok + ", msg=" + msg + ", data=" + data + ", totalNumber=" + totalNumber + ", max="
-            + max + ", hotData=" + hotData + ", hotTotalNumber=" + hotTotalNumber + "]";
+        return "CommentList [data=" + data + ", totalNumber=" + totalNumber + ", max=" + max + ", hotData=" + hotData
+            + ", hotTotalNumber=" + hotTotalNumber + "]";
     }
 
 }
