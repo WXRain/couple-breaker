@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,13 +35,15 @@ public class WeiboCommentService implements IWeiboCommentService {
 
     private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
         + "(KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
-    private static final String WEIBO_COMMENT_URL = "https://m.weibo.cn/api/comments/show?id=%d&page=%d";
+    private static final String WEIBO_COMMENT_URL_FORMAT = "https://m.weibo.cn/api/comments/show?id=%d&page=%d";
     private static final Logger LOGGER = LoggerFactory.getLogger(WeiboCommentService.class);
+    private static final int DEFAULT_PAGE_START_INDEX = 1;
+    private static final int DEFAULT_COMMIT_NUM = 200;
 
     @Override
     public List<Comment> findComment(Long weiboId, Object target) {
         List<Comment> matchComments = new ArrayList<>();
-        for (int page = 1;; page++) {
+        for (int page = DEFAULT_PAGE_START_INDEX;; page++) {
             LOGGER.info("fetching weibo: {}", page);
             if (!this.findByUserIdOrName(weiboId, target, page, matchComments))
                 return matchComments;
@@ -48,7 +51,7 @@ public class WeiboCommentService implements IWeiboCommentService {
     }
 
     @Override
-    public CommentList fetchCommentPage(String url) {
+    public CommentList fetchCommentListByUrl(String url) {
         CommentList commentPageData = null;
         HttpUriRequest request = new HttpGet(url);
         request.setHeader("user_agent", USER_AGENT);
@@ -72,6 +75,34 @@ public class WeiboCommentService implements IWeiboCommentService {
         return commentPageData;
     }
 
+    @Override
+    public CommentList fetchCommentListByIdPage(Long weiboId, Integer page) {
+        return this.fetchCommentListByUrl(String.format(WEIBO_COMMENT_URL_FORMAT, weiboId, page));
+    }
+
+    @Override
+    public List<Comment> fetchCommentsById(Long weiboId) {
+        List<Comment> commentList = new ArrayList<>(DEFAULT_COMMIT_NUM);
+        for (int page = DEFAULT_PAGE_START_INDEX;;page++) {
+            CommentList list = this.fetchCommentListByIdPage(weiboId, page);
+            if (list == null)
+                return commentList;
+            commentList.addAll(list.getData());
+        }
+    }
+
+    @Override
+    public List<Comment> fetchCommentsByIdWithCondition(Long weiboId, Predicate<Comment> contition) {
+        List<Comment> comments = new ArrayList<>(DEFAULT_COMMIT_NUM);
+        for (int page = DEFAULT_PAGE_START_INDEX;;page++) {
+            Optional<CommentList> list = Optional.ofNullable(this.fetchCommentListByIdPage(weiboId, page));
+            if (!list.isPresent())
+                return comments;
+            list.ifPresent(commentList -> commentList.getData().parallelStream()
+                .filter(contition).forEach(comments::add));
+        }
+    }
+
     /**
      * 查找符合条件的评论
      *
@@ -82,8 +113,7 @@ public class WeiboCommentService implements IWeiboCommentService {
      * @return 当前页是否有数据
      */
     private boolean findByUserIdOrName(Long weiboId, Object target, int page, List<Comment> result) {
-        Optional<CommentList> option = Optional.ofNullable(
-            this.fetchCommentPage(String.format(WEIBO_COMMENT_URL, weiboId, page)));
+        Optional<CommentList> option = Optional.ofNullable(this.fetchCommentListByIdPage(weiboId, page));
         option.ifPresent(commentPageData -> {
             List<Comment> matched = Stream.of(commentPageData.getData(),
                 commentPageData.getHotData()) // 同时取得普通评论和热门评论
