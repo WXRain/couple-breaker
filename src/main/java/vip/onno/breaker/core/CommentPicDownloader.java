@@ -1,10 +1,11 @@
-package vip.onno.breaker.util;
+package vip.onno.breaker.core;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,19 +18,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Optional;
 
-import javax.annotation.Resource;
-
 import vip.onno.breaker.common.config.CommonConfig;
 import vip.onno.breaker.pojo.weibo.Comment;
 
 public class CommentPicDownloader implements Runnable {
     public static final File DOWNLOAD_DIR = new File(System.getProperty("user.home"), "weibo-pictures");
     private static final Logger LOGGER  = LoggerFactory.getLogger(CommentPicDownloader.class);
-    @Resource
     private HttpClient httpClient;
     private Comment comment;
 
     public CommentPicDownloader(Comment comment) {
+        httpClient = HttpClients.createDefault();
         this.comment = comment;
     }
 
