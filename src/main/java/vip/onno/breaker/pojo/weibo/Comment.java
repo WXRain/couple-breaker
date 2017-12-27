@@ -1,7 +1,5 @@
 package vip.onno.breaker.pojo.weibo;
 
-import java.util.List;
-
 import com.alibaba.fastjson.annotation.JSONField;
 
 public class Comment {
@@ -10,19 +8,16 @@ public class Comment {
     private User user;
     private String text;
     private Integer likeCounts;
-
     @JSONField(name = "created_at")
     private String createdAt;
-
     @JSONField(name = "reply_id")
     private Long replyId;
-
     @JSONField(name = "reply_text")
     private String replyText;
     @JSONField(name = "like_counts")
     private Boolean liked;
     @JSONField(name = "pic")
-    private List<CommentPicture> pic;
+    private CommentPicture pic;
 
     public String getCreatedAt() {
         return createdAt;
@@ -40,7 +35,7 @@ public class Comment {
         return liked;
     }
 
-    public List<CommentPicture> getPic() {
+    public CommentPicture getPic() {
         return pic;
     }
 
@@ -80,7 +75,7 @@ public class Comment {
         this.liked = liked;
     }
 
-    public void setPic(List<CommentPicture> pic) {
+    public void setPic(CommentPicture pic) {
         this.pic = pic;
     }
 

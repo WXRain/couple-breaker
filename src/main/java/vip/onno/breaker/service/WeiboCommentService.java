@@ -1,5 +1,19 @@
 package vip.onno.breaker.service;
 
+import com.alibaba.fastjson.JSON;
+
+import org.apache.commons.codec.Charsets;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +25,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.codec.Charsets;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import com.alibaba.fastjson.JSON;
-
+import vip.onno.breaker.common.config.CommonConfig;
 import vip.onno.breaker.pojo.weibo.Comment;
 import vip.onno.breaker.pojo.weibo.CommentList;
 import vip.onno.breaker.pojo.weibo.CommentResponse;
@@ -32,10 +34,6 @@ import vip.onno.breaker.pojo.weibo.CommentResponse;
 public class WeiboCommentService implements IWeiboCommentService {
     @Resource
     private HttpClient httpClient;
-
-    private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-        + "(KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
-    private static final String WEIBO_COMMENT_URL_FORMAT = "https://m.weibo.cn/api/comments/show?id=%d&page=%d";
     private static final Logger LOGGER = LoggerFactory.getLogger(WeiboCommentService.class);
     private static final int DEFAULT_PAGE_START_INDEX = 1;
     private static final int DEFAULT_COMMIT_NUM = 200;
@@ -54,11 +52,11 @@ public class WeiboCommentService implements IWeiboCommentService {
     public CommentList fetchCommentListByUrl(String url) {
         CommentList commentPageData = null;
         HttpUriRequest request = new HttpGet(url);
-        request.setHeader("user_agent", USER_AGENT);
+        request.setHeader("user_agent", CommonConfig.USER_AGENT);
         try {
             HttpResponse response = httpClient.execute(request);
             int responseStatus = response.getStatusLine().getStatusCode();
-            if (responseStatus == 200) {
+            if (responseStatus == HttpStatus.SC_OK) {
                 String responseContent = EntityUtils.toString(response.getEntity(), Charsets.UTF_8);
                 LOGGER.info(responseContent);
                 CommentResponse commentResponse = JSON.parseObject(responseContent, CommentResponse.class);
@@ -77,7 +75,7 @@ public class WeiboCommentService implements IWeiboCommentService {
 
     @Override
     public CommentList fetchCommentListByIdPage(Long weiboId, Integer page) {
-        return this.fetchCommentListByUrl(String.format(WEIBO_COMMENT_URL_FORMAT, weiboId, page));
+        return this.fetchCommentListByUrl(String.format(CommonConfig.WEIBO_COMMENT_URL_FORMAT, weiboId, page));
     }
 
     @Override
@@ -115,11 +113,9 @@ public class WeiboCommentService implements IWeiboCommentService {
     private boolean findByUserIdOrName(Long weiboId, Object target, int page, List<Comment> result) {
         Optional<CommentList> option = Optional.ofNullable(this.fetchCommentListByIdPage(weiboId, page));
         option.ifPresent(commentPageData -> {
-            List<Comment> matched = Stream.of(commentPageData.getData(),
-                commentPageData.getHotData()) // 同时取得普通评论和热门评论
-                .filter(Objects::nonNull)
-                // 将普通评论和热门评论的stream合并
-                .flatMap(List<Comment>::parallelStream)
+            // 同时取得普通评论和热门评论
+            List<Comment> matched = Stream.of(commentPageData.getData(),commentPageData.getHotData())
+                .filter(Objects::nonNull).flatMap(List<Comment>::parallelStream) // 将普通评论和热门评论的stream合并
                 .filter(comment -> {
                     if (target instanceof Long)
                         return Objects.equals(target, comment.getUser().getId());

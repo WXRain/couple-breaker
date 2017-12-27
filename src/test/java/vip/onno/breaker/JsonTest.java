@@ -8,6 +8,7 @@ import vip.onno.breaker.pojo.weibo.CommentResponse;
 public class JsonTest {
 
     public static void main(String[] args) {
+        System.out.println(System.getProperty("user.home"));
         test2();
     }
 
