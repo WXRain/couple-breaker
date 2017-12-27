@@ -44,9 +44,9 @@ public class WeiboCommentFetcher {
             int responseStatus = response.getStatusLine().getStatusCode();
             if (responseStatus == HttpStatus.SC_OK) {
                 String responseContent = EntityUtils.toString(response.getEntity(), Charsets.UTF_8);
-                LOGGER.info(responseContent);
                 CommentResponse commentResponse = JSON.parseObject(responseContent, CommentResponse.class);
                 commentPageData = commentResponse.getData();
+                LOGGER.debug("Weibo comment page fetched.");
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -55,7 +55,6 @@ public class WeiboCommentFetcher {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LOGGER.debug("comment page: {}", commentPageData);
         return commentPageData;
     }
 

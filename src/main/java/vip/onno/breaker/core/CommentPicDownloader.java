@@ -53,14 +53,23 @@ public class CommentPicDownloader implements Runnable {
                 try (OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(DOWNLOAD_DIR, fileName)));
                      InputStream in = new BufferedInputStream(response.getEntity().getContent())) {
                     byte[] buffer = new byte[8 * 1024];
-                    while (in.read(buffer) != -1)
-                        out.write(buffer);
+                    int read = -1;
+                    while ((read = in.read(buffer)) != -1) {
+                        /*
+                        BufferedOutputStream 配合 write(byte[] b) 方法 IO 效率最高
+                        BufferedInputStream 并不能保证每次都能读到 buffer 大小的数据（尤其是网络通信受 MTU 限制），
+                        但是 BufferOutputStream 的 write 方法仍然按照 buffer 的大小进行写入，
+                        所以不能使用 BufferedOutputStream.write(byte[] buffer) 方法写入数据，
+                        并且 write() 调用时长度要以每次读到的为准
+                         */
+                        out.write(buffer, 0, read);
+                    }
                     out.flush();
                 }
+                LOGGER.info("Downloaded: {} -> {}", comment.getPic().getUrl(), fileName);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            LOGGER.info("Downloaded: {} -> {}", comment.getPic().getUrl(), fileName);
         });
     }
 }
